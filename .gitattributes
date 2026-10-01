@@ -1,0 +1,12 @@
+# Keep the committed text files LF regardless of the contributor's platform.
+* text=auto eol=lf
+
+# Windows-only helpers, if any are ever added, keep their native endings.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Never let git treat these as text to diff/merge.
+*.png binary
+*.jpg binary
+*.ico binary

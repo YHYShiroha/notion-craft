@@ -1,0 +1,14 @@
+# Never commit credentials or per-user state.
+# The Notion token lives in ~/.dsh/notion-credentials.json, NOT here; these rules
+# are the second line of defence in case someone copies a file into the skill.
+.audit.log
+*credentials*.json
+credentials.json
+.env
+.env.*
+*.token
+token.txt
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
