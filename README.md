@@ -1,5 +1,7 @@
 # notion-craft
 
+**English** | [简体中文](README.zh-CN.md)
+
 A [DSH](https://github.com/deepseek-ai) skill that lets an agent read and write Notion content
 through the official Notion API — find pages, read page bodies, query databases and data
 sources, create and update pages, append and edit blocks, and comment. Deletion is a **dry run
