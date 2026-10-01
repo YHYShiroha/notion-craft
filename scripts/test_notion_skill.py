@@ -327,6 +327,28 @@ class Parsing(unittest.TestCase):
         with self.assertRaises(notion_client.UsageError):
             notion.build_children(args)
 
+    def test_content_arg_reads_stdin_for_dash(self):
+        """`--markdown -` must read stdin, not create a paragraph containing '-'."""
+        with mock.patch.object(notion.sys, "stdin", io.StringIO("## Title\ntext")):
+            self.assertEqual(notion.content_arg("-"), "## Title\ntext")
+
+    def test_content_arg_reads_a_file(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "body.md"
+            path.write_text("# From file", encoding="utf-8")
+            self.assertEqual(notion.content_arg(f"@{path}"), "# From file")
+
+    def test_content_arg_passes_plain_text_through(self):
+        self.assertEqual(notion.content_arg("## inline"), "## inline")
+
+    def test_markdown_from_stdin_becomes_real_blocks(self):
+        args = mock.Mock(blocks_json=None, markdown="-", text=None, block_type="paragraph")
+        with mock.patch.object(notion.sys, "stdin", io.StringIO("## H\n- a\n- b")):
+            blocks = notion.build_children(args)
+        self.assertEqual([b["type"] for b in blocks],
+                         ["heading_2", "bulleted_list_item", "bulleted_list_item"])
+
     def test_block_text_and_markdown_cover_common_types(self):
         for block, expected in [
             ({"type": "heading_1", "heading_1": {"rich_text": [{"plain_text": "H"}]}}, "# H"),

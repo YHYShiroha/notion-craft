@@ -91,8 +91,10 @@ def add_filter_options(parser: argparse.ArgumentParser) -> None:
 
 
 def add_children_options(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--text", help="plain text body; one block per non-empty line")
-    parser.add_argument("--markdown", help="Markdown body (#/##/###, -, 1., - [ ], >, ---, ```)")
+    parser.add_argument("--text", help="plain text body; one block per non-empty line "
+                                       "(@file or - for stdin)")
+    parser.add_argument("--markdown", help="Markdown body (#/##/###, -, 1., - [ ], >, ---, ```); "
+                                           "@file or - for stdin")
     parser.add_argument("--blocks-json", help="raw Notion block array as JSON, @file, or -")
     parser.add_argument("--block-type", default="paragraph",
                         help="block type used for --text (default paragraph)")
@@ -274,6 +276,22 @@ def build_api(args) -> NotionAPI:
                      verbose=bool(option(args, "verbose", False)))
 
 
+def content_arg(value: str) -> str:
+    """Resolve a body argument: `-` reads stdin, `@path` reads that file.
+
+    Mirrors what --blocks-json already did. Without this, `--markdown -` would be
+    taken literally and create a one-character paragraph containing "-".
+    """
+    if value == "-":
+        return sys.stdin.read()
+    if value.startswith("@"):
+        try:
+            return Path(value[1:]).read_text(encoding="utf-8")
+        except OSError as exc:
+            raise UsageError(f"cannot read content from {value[1:]}: {exc}") from exc
+    return value
+
+
 def build_children(args) -> list[dict]:
     blocks: list[dict] = []
     if getattr(args, "blocks_json", None):
@@ -284,9 +302,10 @@ def build_children(args) -> list[dict]:
             raise UsageError("--blocks-json must be a JSON array of blocks")
         blocks.extend(payload)
     if getattr(args, "markdown", None):
-        blocks.extend(markdown_to_blocks(args.markdown))
+        blocks.extend(markdown_to_blocks(content_arg(args.markdown)))
     if getattr(args, "text", None):
-        blocks.extend(text_to_blocks(args.text, getattr(args, "block_type", "paragraph")))
+        blocks.extend(text_to_blocks(content_arg(args.text),
+                                     getattr(args, "block_type", "paragraph")))
     return blocks
 
 

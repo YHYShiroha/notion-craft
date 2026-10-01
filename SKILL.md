@@ -86,9 +86,12 @@ python <skill-dir>/scripts/notion.py page append <page-id> --markdown "## Notes
 ```
 
 `--markdown` understands `#`/`##`/`###`, `-`, `1.`, `- [ ]`, `>`, `---` and fenced code;
-`--text` makes one block per non-empty line; `--blocks-json` takes a raw Notion block array
-(inline JSON, `@file.json`, or `-` for stdin). Appending is additive and safe — prefer it over
-rewriting existing content.
+`--text` makes one block per non-empty line; `--blocks-json` takes a raw Notion block array.
+All three accept inline source, `@file` to read a file, or `-` to read stdin — prefer `@file`
+for anything longer than a line or containing non-ASCII text, because the Windows command line
+can mangle non-ASCII arguments. Inline `**bold**` and `*italic*` are sent as literal text: the
+Markdown subset is block level only, so strip those markers or use `--blocks-json` when rich
+text matters. Appending is additive and safe — prefer it over rewriting existing content.
 
 **Create a page**
 

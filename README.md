@@ -404,7 +404,7 @@ Set `--api-version 2022-06-28` only for a workspace that predates data sources. 
 No dependencies, no virtualenv:
 
 ```bash
-python scripts/test_notion_skill.py     # 41 offline tests: no network, no token
+python scripts/test_notion_skill.py     # 45 offline tests: no network, no token
 python scripts/check_no_secrets.py      # fails if a credential leaked into the tree
 ```
 

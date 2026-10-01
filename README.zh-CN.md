@@ -360,7 +360,7 @@ $ python scripts/notion.py page delete 3ecee4421d4b81ad964ad52d95cdb9aa --yes --
 无依赖，不需要虚拟环境：
 
 ```bash
-python scripts/test_notion_skill.py     # 41 项离线测试：不联网、不需要 token
+python scripts/test_notion_skill.py     # 45 项离线测试：不联网、不需要 token
 python scripts/check_no_secrets.py      # 一旦密钥泄漏进仓库树就失败
 ```
 
